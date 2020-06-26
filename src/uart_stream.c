@@ -9,8 +9,11 @@
 
 #include "inc/tm4c123gh6pm.h"
 #include "uart.h"
+#include "global.h"
 
 #include <stdio.h>
+
+int tcl_uart_async_handler(void);
 
 static void __attribute__((constructor)) uart_stream_setup(void)
 {
@@ -35,7 +38,12 @@ int uart_stream_read(char *ptr, int len)
     char ch;
     while (cnt < len)
     {
-        ch = uart0_read();
+        while(check(UART0_FR_R,4))
+		{	
+			tcl_uart_async_handler();
+		}
+		ch = UART0_DR_R;
+		
 		if(ch=='\r')
 			ch='\n';
 		

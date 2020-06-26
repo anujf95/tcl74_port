@@ -36,7 +36,7 @@ extern int		errno;
 extern int		isatty _ANSI_ARGS_((int fd));
 extern char *		strcpy _ANSI_ARGS_((char *dst, CONST char *src));
 
-static Tcl_Interp *interp;	/* Interpreter for application. */
+/*static*/ Tcl_Interp *interp;	/* Interpreter for application. */
 static Tcl_DString command;	/* Used to buffer incomplete commands being
 				 * read from stdin. */
 #ifdef TCL_MEM_DEBUG

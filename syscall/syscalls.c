@@ -333,7 +333,7 @@ int _write(int fd, const void *buf, size_t cnt)
     case STDOUT_FILENO:
     case STDERR_FILENO:
         return uart_stream_write((char *)buf, cnt);
-
+	
     default:
 		retval = efs_write(fd,buf,cnt);
 		if(retval>=0)

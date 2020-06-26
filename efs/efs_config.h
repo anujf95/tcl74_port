@@ -17,7 +17,7 @@
 
 #define EFS_MAX_OPEN_FILES  (2)
 #define EFS_MALLOC_SUPPORT  (1)
-#define EFS_FD_OFFSET       (4)
+#define EFS_FD_OFFSET       (10)
 
 #endif
 

@@ -55,6 +55,7 @@ Tcl_AppInit(interp)
      */
 	Tcl_CreateCommand(interp, "delay", delayCmd,(ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 	Tcl_CreateCommand(interp, "led", LedCmd,(ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+	Tcl_CreateCommand(interp, "system", systemCmd,(ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
     /*
      * Specify a user-specific startup file to invoke if the application
      * is run interactively.  Typically the startup file is "~/.apprc"

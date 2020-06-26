@@ -127,7 +127,7 @@ void uart2_init(uint32_t baud_rate,uint32_t line_config, uint8_t rx_int_en)
     GPIO_PORTD_PCTL_R = (GPIO_PORTD_PCTL_R & 0x00FFFFFFFF) | 0x11000000;
 
     //Wait for TxD output to establish idle high. TxD=PD7
-    while(!check(GPIO_PORTD_DATA_R,7));
+    //while(!check(GPIO_PORTD_DATA_R,7));
 
 }
 

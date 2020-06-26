@@ -244,7 +244,7 @@
               <MiscControls>-fsigned-char -specs="nosys.specs"</MiscControls>
               <Define>PART_TM4C123GH6PM, gcc, F_CPU=16000000UL, NEED_MATHERR</Define>
               <Undefine></Undefine>
-              <IncludePath>.\inc;..\tcl74;.\syscall;.\tivalib;.\tcl74;.\efs</IncludePath>
+              <IncludePath>.\inc;.\syscall;.\tivalib;..\tcl74_port;.\efs;.\tcl74</IncludePath>
             </VariousControls>
           </Carm>
           <Aarm>

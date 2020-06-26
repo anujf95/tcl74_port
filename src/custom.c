@@ -3,6 +3,88 @@
 #include "delay.h"
 #include "gpio.h"
 
+/********************System Control**************************/
+char trigger[1][100] = {0};
+struct event_ctl_s event_ctl[1];
+int system_every_handler(ClientData clientData,Tcl_Interp *interp, int code)
+{
+	return Tcl_Eval(interp, (char *) clientData);
+}
+int systemCmd(ClientData clientData, Tcl_Interp *interp, int argc,  char *argv[])
+{
+	#define SYSTEM_HELP "Usage:\n"\
+	"system trigger <event> <cmd>\n"\
+	"system every <ms> <cmd>\n"\
+	"system init <peripheral>\n"\
+	
+	if(argc < 3 )
+	{
+		Tcl_AppendResult(interp, SYSTEM_HELP, (char *) NULL);
+		return TCL_ERROR;
+	}
+	
+	if(!strcmp(argv[1],"trigger"))
+	{
+		if(!strcmp(argv[2],"sw2"))
+		{
+			if(argc<4)
+			{
+				Tcl_AppendResult(interp, "Invalid TCL command", (char *) NULL);
+				return TCL_ERROR;
+			}
+			else
+			{
+				strcpy(trigger[0],argv[3]);
+				Tcl_AppendResult(interp, "TCL command (",argv[3],") registered for trigger sw2", (char *) NULL);
+				return TCL_OK;
+			}
+		}
+		else
+		{
+			Tcl_AppendResult(interp, "Only 'sw2' event supported now.", (char *) NULL);
+			return TCL_ERROR;
+		}
+	}
+	else if(!strcmp(argv[1],"every"))
+	{
+		if(argc<4)
+		{
+			Tcl_AppendResult(interp, "Invalid TCL command", (char *) NULL);
+			return TCL_ERROR;
+		}
+		else
+		{
+			sscanf(argv[2],"%u",&event_ctl[0].count_ms);
+			strcpy(event_ctl[0].cmd,argv[3]);
+			event_ctl[0].async = Tcl_AsyncCreate(system_every_handler,event_ctl[0].cmd);
+			Tcl_AppendResult(interp, "TCL command (",argv[3],") registered every ",argv[2]," ms", (char *) NULL);
+			return TCL_OK;
+		}
+	}
+	else if(!strcmp(argv[1],"init"))
+	{
+		if(!strcmp(argv[1],"uart2"))
+		{
+		}
+		else
+		{
+			Tcl_AppendResult(interp, "Only 'uart2' init is  supported now.", (char *) NULL);
+			return TCL_ERROR;
+		}
+	}
+	else
+	{
+		Tcl_AppendResult(interp, "Invalid action", (char *) NULL);
+		return TCL_ERROR;
+	}
+}
+
+
+
+
+
+
+/**********************Delay Command****************************/
 int delayCmd(ClientData clientData, Tcl_Interp *interp, int argc,  char *argv[])
 {
 	unsigned int delay;
@@ -28,8 +110,6 @@ typedef struct
     volatile uint32_t *reg;
     uint32_t set_mask;
 }led_ctl_t;
-
-volatile uint32_t ticks = 0;
 volatile uint32_t gint32 = 0;
 
 led_ctl_t red_led, green_led, blue_led,all_led;
