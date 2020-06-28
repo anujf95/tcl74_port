@@ -9,10 +9,14 @@ struct event_ctl_s
 	char cmd[100];
 	Tcl_AsyncHandler async;
 };
+
+extern volatile uint32_t ticks;
+
 int delayCmd(ClientData clientData, Tcl_Interp *interp, int argc,  char *argv[]);
 void task_led_systickintr_handler(void);
 void task_led_init(void);
 int LedCmd(ClientData clientData, Tcl_Interp *interp, int argc,  char *argv[]);
 int systemCmd(ClientData clientData, Tcl_Interp *interp, int argc,  char *argv[]);
+int LcdCmd(ClientData clientData, Tcl_Interp *interp, int argc,  char *argv[]);
 
 #endif

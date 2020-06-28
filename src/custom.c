@@ -2,6 +2,15 @@
 #include "tcl.h"
 #include "delay.h"
 #include "gpio.h"
+#include "Nokia5110.h"
+
+__attribute__((always_inline)) static inline uint32_t __get_MSP(void)
+{
+  uint32_t result;
+
+  __asm volatile ("MRS %0, msp" : "=r" (result) );
+  return(result);
+}
 
 /********************System Control**************************/
 char trigger[1][100] = {0};
@@ -12,6 +21,7 @@ int system_every_handler(ClientData clientData,Tcl_Interp *interp, int code)
 }
 int systemCmd(ClientData clientData, Tcl_Interp *interp, int argc,  char *argv[])
 {
+	char buffer[50]={0};
 	#define SYSTEM_HELP "Usage:\n"\
 	"system trigger <event> <cmd>\n"\
 	"system every <ms> <cmd>\n"\
@@ -61,14 +71,33 @@ int systemCmd(ClientData clientData, Tcl_Interp *interp, int argc,  char *argv[]
 			return TCL_OK;
 		}
 	}
-	else if(!strcmp(argv[1],"init"))
+	else if(!strcmp(argv[1],"get"))
 	{
-		if(!strcmp(argv[1],"uart2"))
+		if(!strcmp(argv[2],"adc0"))
 		{
+			ADC0_PSSI_R |= 8;      /* start a conversion sequence 3 */
+			while((ADC0_RIS_R & 8) == 0);                  /* wait for conversion complete */
+			sprintf(buffer,"%u",(ADC0_SSFIFO3_R)/4); /* read conversion result */
+			ADC0_ISC_R = 8;        /* clear completion flag */
+			
+			Tcl_AppendResult(interp, buffer, (char *) NULL);
+			return TCL_OK;
+		}
+		else if(!strcmp(argv[2],"sp"))
+		{
+			sprintf(buffer,"%u",__get_MSP()); /* read conversion result */
+			Tcl_AppendResult(interp, buffer, (char *) NULL);
+			return TCL_OK;
+		}
+		else if(!strcmp(argv[2],"ticks"))
+		{
+			sprintf(buffer,"%u",ticks); /* read conversion result */
+			Tcl_AppendResult(interp, buffer, (char *) NULL);
+			return TCL_OK;
 		}
 		else
 		{
-			Tcl_AppendResult(interp, "Only 'uart2' init is  supported now.", (char *) NULL);
+			Tcl_AppendResult(interp, "unsupported get request.", (char *) NULL);
 			return TCL_ERROR;
 		}
 	}
@@ -248,4 +277,37 @@ int LedCmd(ClientData clientData, Tcl_Interp *interp, int argc,  char *argv[])
     return TCL_OK;
 }
 
+/***********************LCD Control*********************************/
 
+int LcdCmd(ClientData clientData, Tcl_Interp *interp, int argc,  char *argv[])
+{
+	uint8_t x=1,y=1;
+	if(argc<2)
+	{
+		Tcl_AppendResult(interp, "Usage:\n lcd clear\n lcd write <string>\n lcd cursor <r> <c>", (char *) NULL);
+		return TCL_ERROR;
+	}
+	
+	if(!strcmp(argv[1],"clear"))
+	{
+		Nokia5110_Clear();
+		return TCL_OK;
+	}
+	else if(!strcmp(argv[1],"write"))
+	{
+		Nokia5110_OutString(argv[2]);
+		return TCL_OK;
+	}
+	else if(!strcmp(argv[1],"cursor"))
+	{
+		y = atoi(argv[2]);
+		x = atoi(argv[3]);
+		Nokia5110_SetCursor(x,y);
+		return TCL_OK;
+	}
+	else
+	{
+		Tcl_AppendResult(interp, "Usage:\n lcd clear\n lcd write <string>", (char *) NULL);
+		return TCL_ERROR;
+	}
+}

@@ -10,6 +10,7 @@
 #include "systick.h"
 #include "gpio.h"
 #include "tcl.h"
+#include "Nokia5110.h"
 
 void virtual_efs_init(void)
 {
@@ -59,18 +60,31 @@ void virtual_tcl_fs_init(void)
 	fprintf(fp,EDIT_PROC);
 	fclose(fp);
 	
-	#define TEST_TCL "for {set i 0} {$i < 10} {incr i} {\n"\
+	#define DEMO2_TCL "for {set i 0} {$i < 10} {incr i} {\n"\
 	" puts $i\n"\
 	" led blue on\n"\
-	" delay 500\n"\
+	" delay [system get adc0]\n"\
 	" led blue off\n"\
-	" delay 500 \n"\
+	" delay [system get adc0] \n"\
 	"}"
 	
-	fp = fopen("test.tcl","w+");
+	fp = fopen("demo2.tcl","w+");
     if(fp==NULL)
         while(1);
-	fprintf(fp,TEST_TCL);
+	fprintf(fp,DEMO2_TCL);
+	fclose(fp);
+	
+	#define UPDATE_TCL "set sp [system get sp]\n"\
+	"set ticks [system get ticks]\n"\
+	"lcd clear\n"\
+	"lcd write \"sp:$sp\"\n"\
+	"lcd cursor 3 0\n"\
+	"lcd write \"ticks:$ticks\""
+	
+	fp = fopen("update.tcl","w+");
+    if(fp==NULL)
+        while(1);
+	fprintf(fp,UPDATE_TCL);
 	fclose(fp);
 }
 
@@ -99,6 +113,8 @@ int main(void)
 	//peripherals init
 	systick_init(1000);
 	gpio_portf_enable();
+	adc_init();
+	Nokia5110_Init();
 	gpio_portf_intr_enable(SW1_BIT, 0, 0, 0);
 	gpio_portf_intr_enable(SW2_BIT, 0, 0, 0);
 	nvic_set_priority(&NVIC_PRI7_R, 2, 5);
@@ -174,4 +190,23 @@ int tcl_uart_async_handler(void)
 	{
 		return Tcl_Eval(interp, "");
 	}
+}
+
+void adc_init(void)
+{
+	/* enable clocks */
+    SYSCTL_RCGCGPIO_R |= 0x08; /* enable clock to PE (AIN0 is on PE3) */
+    SYSCTL_RCGCADC_R |= 1;     /* enable clock to ADC0 */
+ 
+    /* initialize PD1 for AIN6 input  */
+    GPIO_PORTD_AFSEL_R |= (1<<1);   /* enable alternate function */
+    GPIO_PORTD_DEN_R &= ~(1<<1);    /* disable digital function */
+    GPIO_PORTD_AMSEL_R |= (1<<1);   /* enable analog function */
+ 
+    /* initialize ADC0 */
+    ADC0_ACTSS_R &= ~8;        /* disable SS3 during configuration */
+    ADC0_EMUX_R &= ~0xF000;    /* software trigger conversion */
+    ADC0_SSMUX3_R = 6;         /* get input from channel 0 */
+    ADC0_SSCTL3_R |= 6;        /* take one sample at a time, set flag at 1st sample */
+    ADC0_ACTSS_R |= 8;         /* enable ADC0 sequencer 3 */
 }

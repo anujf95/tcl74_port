@@ -149,3 +149,4 @@ void uart2_write(uint8_t data)
     UART2_DR_R = data;
 }
 
+
