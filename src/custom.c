@@ -15,6 +15,7 @@ __attribute__((always_inline)) static inline uint32_t __get_MSP(void)
 /********************System Control**************************/
 char trigger[1][100] = {0};
 struct event_ctl_s event_ctl[1];
+volatile uint8_t system_custom_lcd = 0;
 int system_every_handler(ClientData clientData,Tcl_Interp *interp, int code)
 {
 	return Tcl_Eval(interp, (char *) clientData);
@@ -25,7 +26,8 @@ int systemCmd(ClientData clientData, Tcl_Interp *interp, int argc,  char *argv[]
 	#define SYSTEM_HELP "Usage:\n"\
 	"system trigger <event> <cmd>\n"\
 	"system every <ms> <cmd>\n"\
-	"system init <peripheral>\n"\
+	"system get <parameter>\n"\
+	"system set <parameter> <value>\n"\
 	
 	if(argc < 3 )
 	{
@@ -101,9 +103,37 @@ int systemCmd(ClientData clientData, Tcl_Interp *interp, int argc,  char *argv[]
 			return TCL_ERROR;
 		}
 	}
+	else if(!strcmp(argv[1],"set"))
+	{
+		if(!strcmp(argv[2],"custom_lcd"))
+		{
+			if(argv[3][0]=='0')
+			{
+				system_custom_lcd = 0;
+				Nokia5110_Clear();
+				return TCL_OK;
+			}
+			else if(argv[3][0]=='1')
+			{
+				system_custom_lcd = 1;
+				Nokia5110_Clear();
+				return TCL_OK;
+			}
+			else
+			{
+				Tcl_AppendResult(interp, "unsupported value.", (char *) NULL);
+				return TCL_ERROR;
+			}
+		}
+		else
+		{
+			Tcl_AppendResult(interp, "unsupported set request.", (char *) NULL);
+			return TCL_ERROR;
+		}
+	}
 	else
 	{
-		Tcl_AppendResult(interp, "Invalid action", (char *) NULL);
+		Tcl_AppendResult(interp, "Invalid System Action", (char *) NULL);
 		return TCL_ERROR;
 	}
 }

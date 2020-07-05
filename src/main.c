@@ -142,8 +142,10 @@ int main(void)
 /******************************ISR Handlers****************************************/
 extern struct event_ctl_s event_ctl[1];
 volatile uint32_t ticks = 0;
+extern volatile uint8_t system_custom_lcd;
 void systick_handler(void)
 {
+	char buffer[20];
 	ticks++;
 	task_led_systickintr_handler();
 	if(event_ctl[0].count_ms != 0)
@@ -151,6 +153,15 @@ void systick_handler(void)
 		if(ticks % event_ctl[0].count_ms == 0)
 		{
 			Tcl_AsyncMark(event_ctl[0].async);
+		}
+	}
+	if(!system_custom_lcd)
+	{
+		if(ticks % 1000 == 0)
+		{
+			Nokia5110_Clear();
+			sprintf(buffer,"ticks:%u",ticks);
+			Nokia5110_OutString(buffer);
 		}
 	}
 }

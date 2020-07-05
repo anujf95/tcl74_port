@@ -145,7 +145,7 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>DLGDARM</Key>
-          <Name>(1010=-1,-1,-1,-1,0)(1007=-1,-1,-1,-1,0)(1008=-1,-1,-1,-1,0)(1009=-1,-1,-1,-1,0)(1012=-1,-1,-1,-1,0)(9108=672,286,847,517,0)(9106=600,168,819,334,1)(9104=-1,-1,-1,-1,0)(9107=91,126,554,406,1)(9102=575,211,981,494,0)</Name>
+          <Name>(1010=-1,-1,-1,-1,0)(1007=-1,-1,-1,-1,0)(1008=-1,-1,-1,-1,0)(1009=-1,-1,-1,-1,0)(1012=-1,-1,-1,-1,0)(9108=672,286,847,517,0)(9106=573,145,792,311,1)(9104=-1,-1,-1,-1,0)(9107=91,126,554,406,1)(9102=397,381,803,664,1)</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -165,26 +165,6 @@
           <WinNumber>1</WinNumber>
           <ItemText>eeprom</ItemText>
         </Ww>
-        <Ww>
-          <count>1</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>interp</ItemText>
-        </Ww>
-        <Ww>
-          <count>2</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>Tcl_Async</ItemText>
-        </Ww>
-        <Ww>
-          <count>3</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>errno</ItemText>
-        </Ww>
-        <Ww>
-          <count>4</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>trigger</ItemText>
-        </Ww>
       </WatchWindow1>
       <MemoryWindow1>
         <Mm>
@@ -203,7 +183,7 @@
         <aLwin>0</aLwin>
         <aCover>0</aCover>
         <aSer1>1</aSer1>
-        <aSer2>1</aSer2>
+        <aSer2>0</aSer2>
         <aPa>0</aPa>
         <viewmode>1</viewmode>
         <vrSel>0</vrSel>
